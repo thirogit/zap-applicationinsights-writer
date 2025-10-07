@@ -107,7 +107,7 @@ func New(appInsightsConfig *AppInsightsConfig) zapcore.WriteSyncer {
 }
 
 func (appInsightsConfig *AppInsightsConfig) Sync() error {
-	// currently a noop.
+	appInsightsConfig.client.Flush()
 	return nil
 }
 
