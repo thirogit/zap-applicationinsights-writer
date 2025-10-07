@@ -107,7 +107,7 @@ func New(appInsightsConfig *AppInsightsConfig) zapcore.WriteSyncer {
 }
 
 func (appInsightsConfig *AppInsightsConfig) Sync() error {
-	appInsightsConfig.client.Flush()
+	appInsightsConfig.client.Channel().Flush()
 	return nil
 }
 
