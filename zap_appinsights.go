@@ -21,12 +21,30 @@ type AppInsightsConfig struct {
 	filters map[string]func(interface{}) interface{}
 }
 
+type TransmissionSettings struct {
+	MaxBatchSize     int
+	MaxBatchInterval time.Duration
+}
+
 // Config for application insights
 type Config struct {
+	TransmissionSettings
 	InstrumentationKey string
 	EndpointURL        string
-	MaxBatchSize       int
-	MaxBatchInterval   time.Duration
+}
+
+func NewAppInsightsCoreFromConnectionString(connStr string, transSettings TransmissionSettings, fs ...zapcore.Field) (zapcore.Core, zap.Option, error) {
+	cs, error := NewConnectionString(connStr)
+	if error != nil {
+		return nil, nil, error
+	}
+
+	config := Config{
+		InstrumentationKey:   cs.InstrumentationKey,
+		EndpointURL:          cs.IngestionEndpoint + "/v2.1/track",
+		TransmissionSettings: transSettings,
+	}
+	return NewAppInsightsCore(config, fs...)
 }
 
 func NewAppInsightsCore(conf Config, fs ...zapcore.Field) (zapcore.Core, zap.Option, error) {
